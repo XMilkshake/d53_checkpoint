@@ -11,8 +11,6 @@ local function set_checkpoint(player, pos)
 
 	if vdistance(pos, ppos) <= 10 then
 		players[name] = ppos
-		minetest.sound_play({name="checkpoint_checkpoint", gain=0.75},
-				{to_player=name})
 		minetest.chat_send_player(name, "Checkpoint set.")
 	else
 		minetest.chat_send_player(name, "Out of range!")
@@ -59,3 +57,25 @@ minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	players[name] = nil
 end)
+
+minetest.register_privilege("checkpoint_control", {
+	description = "Using checkpoint mod.",
+})
+
+minetest.register_chatcommand("r_checkpoint", {
+	description = "Reset checkpoints.",
+	privs = {checkpoint_control = true},
+	func = function(name)
+		players[name] = nil
+		minetest.chat_send_player(name, "Checkpoint removed.")
+	end
+})
+
+minetest.register_chatcommand("r_checkpoints", {
+	description = "Resets all checkpoints",
+	privs = {checkpoint_control = true},
+	func = function(name)
+		players = {}
+		minetest.chat_send_player(name, "All checkpoints removed.")
+	end
+})
